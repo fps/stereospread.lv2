@@ -45,23 +45,25 @@ static void run(LV2_Handle instance, uint32_t sample_count)
     {
         tinstance->buffer[tinstance->buffer_head] = tinstance->ports[0][sample_index];
         
-        int buffer_tail = tinstance->buffer_head - length;
-        if (buffer_tail < 0) {
-            buffer_tail += 1000;
-        }
-        
+        float l = 0;
+        float r = 0;
         for (int ir_index = 0; ir_index < length; ++ir_index) {
-
+            l += ir[2*ir_index] * tinstance->buffer[(tinstance->buffer_head + ir_index) % 1000];
+            r += ir[2*ir_index+1] * tinstance->buffer[(tinstance->buffer_head + ir_index) % 1000];
         }
 
-        tinstance->ports[1][sample_index] = scale * tinstance->buffer[buffer_tail];
-        ++tinstance->buffer_head;
-        tinstance->buffer_head %= 1000;
+        tinstance->ports[1][sample_index] = wet * l + dry * tinstance->ports[0][sample_index];
+        tinstance->ports[2][sample_index] = wet * r + dry * tinstance->ports[0][sample_index];
+
+        --tinstance->buffer_head;
+        if (tinstance->buffer_head < 0) {
+            tinstance->buffer_head += 1000;
+        }
     }
 }
 
 static const LV2_Descriptor descriptor = {
-    "http://fps.io/plugins/relative_dynamics",
+    "http://fps.io/plugins/stereospread",
     instantiate,
     connect_port,
     nullptr, // activate
