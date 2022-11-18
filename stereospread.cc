@@ -8,7 +8,7 @@
 
 struct stereospread {
     bool is_s2s;
-    float *ports[7];
+    float *ports[6];
     std::vector<float> buffer_l;
     std::vector<float> buffer_r;
     int buffer_head;
@@ -54,8 +54,7 @@ static void run(LV2_Handle instance, uint32_t sample_count)
     if (tinstance->is_s2s) {
         ++control_port;
     }
-    const float wet = tinstance->ports[control_port++][0];
-    const float dry = tinstance->ports[control_port++][0];
+    const float drywet = tinstance->ports[control_port++][0];
     const int length_port = tinstance->ports[control_port++][0];
 
     const int length = ir_lengths[length_port];
@@ -87,11 +86,11 @@ static void run(LV2_Handle instance, uint32_t sample_count)
         }
 
         if (tinstance->is_s2s == false) {
-            tinstance->ports[1][sample_index] = wet * l + dry * tinstance->ports[0][sample_index];
-            tinstance->ports[2][sample_index] = wet * r + dry * tinstance->ports[0][sample_index];
+            tinstance->ports[1][sample_index] = drywet * l + (1-drywet) * tinstance->ports[0][sample_index];
+            tinstance->ports[2][sample_index] = drywet * r + (1-drywet) * tinstance->ports[0][sample_index];
         } else {
-            tinstance->ports[2][sample_index] = wet * l + dry * tinstance->ports[0][sample_index];
-            tinstance->ports[3][sample_index] = wet * r + dry * tinstance->ports[1][sample_index];
+            tinstance->ports[2][sample_index] = drywet * l + (1-drywet) * tinstance->ports[0][sample_index];
+            tinstance->ports[3][sample_index] = drywet * r + (1-drywet) * tinstance->ports[1][sample_index];
         }
 
         --tinstance->buffer_head;
