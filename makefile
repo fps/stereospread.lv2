@@ -7,7 +7,7 @@ OPTFLAGS ?= -O3 -march=native -mcpu=native
 
 all: lv2/stereospread/stereospread.so
 
-lv2/stereospread/stereospread.so: stereospread.cc ir.h
+lv2/stereospread/stereospread.so: stereospread.cc ir.c
 	g++ ${OPTFLAGS} -shared -o lv2/stereospread/stereospread.so stereospread.cc
 
 install: all
