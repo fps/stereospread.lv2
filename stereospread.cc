@@ -4,7 +4,7 @@
 
 #include <lv2.h>
 
-#include "ir.h"
+#include "ir.c"
 
 struct stereospread {
     bool is_s2s;
@@ -56,7 +56,11 @@ static void run(LV2_Handle instance, uint32_t sample_count)
     }
     const float wet = tinstance->ports[control_port++][0];
     const float dry = tinstance->ports[control_port++][0];
-    const int length = tinstance->ports[control_port++][0];
+    const int length_port = tinstance->ports[control_port++][0];
+
+    const int length = ir_lengths[length_port];
+
+    const float* ir = irs[length_port];
 
     for(uint32_t sample_index = 0; sample_index < sample_count; ++sample_index)
     {
