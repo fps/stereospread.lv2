@@ -58,6 +58,8 @@ static void run(LV2_Handle instance, uint32_t sample_count)
     const int length_port = tinstance->ports[control_port++][0];
 
     const int length = ir_lengths[length_port];
+    if (length < 0) length = 0;
+    if (length > 8) length = 8;
 
     const float* ir = irs[length_port];
 
